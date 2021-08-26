@@ -5,13 +5,11 @@ import fakegram.adapter.http.dto.UpdateUserInfoDto;
 import fakegram.container.AbstractContainerBaseTest;
 import fakegram.domain.model.account.Gender;
 import fakegram.domain.model.account.User;
-import io.micronaut.context.ApplicationContext;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
-import io.micronaut.runtime.server.EmbeddedServer;
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.security.token.jwt.render.BearerAccessRefreshToken;
 import org.assertj.core.api.SoftAssertions;
@@ -29,12 +27,10 @@ import static org.junit.Assert.assertThrows;
 public class UpdateUserTest extends AbstractContainerBaseTest {
 
     private static HttpClient client;
-    private static EmbeddedServer server;
     private static CassandraUserRepository userRepository;
 
     @BeforeClass
     public static void contextRunning() {
-        EmbeddedServer server = ApplicationContext.run(EmbeddedServer.class);
         userRepository = server
                 .getApplicationContext()
                 .getBean(CassandraUserRepository.class);
@@ -45,9 +41,6 @@ public class UpdateUserTest extends AbstractContainerBaseTest {
 
     @AfterClass
     public static void stopServer() {
-        if (server != null) {
-            server.stop();
-        }
         if (client != null) {
             client.stop();
         }

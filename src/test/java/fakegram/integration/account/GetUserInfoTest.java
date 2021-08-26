@@ -5,9 +5,7 @@ import fakegram.adapter.http.dto.UserInfoDto;
 import fakegram.container.AbstractContainerBaseTest;
 import fakegram.domain.model.account.Gender;
 import fakegram.domain.model.account.User;
-import io.micronaut.context.ApplicationContext;
 import io.micronaut.http.client.HttpClient;
-import io.micronaut.runtime.server.EmbeddedServer;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -23,12 +21,10 @@ public class GetUserInfoTest extends AbstractContainerBaseTest {
 
 
     private static HttpClient client;
-    private static EmbeddedServer server;
     private static CassandraUserRepository userRepository;
 
     @BeforeClass
     public static void contextRunning() {
-        EmbeddedServer server = ApplicationContext.run(EmbeddedServer.class);
         userRepository = server
                 .getApplicationContext()
                 .getBean(CassandraUserRepository.class);
@@ -39,16 +35,13 @@ public class GetUserInfoTest extends AbstractContainerBaseTest {
 
     @AfterClass
     public static void stopServer() {
-        if (server != null) {
-            server.stop();
-        }
         if (client != null) {
             client.stop();
         }
     }
 
     @Test
-    public void itSuccessfullyRegistersUser() {
+    public void itSuccessfullyGetsUserInfo() {
         //Given
         User user = generateUser();
         UUID userId = user.getAccountId();
