@@ -1,23 +1,19 @@
 package fakegram.domain.repository;
 
-import fakegram.adapter.cassandra.model.following.Follower;
-import fakegram.adapter.cassandra.model.following.Following;
-import fakegram.domain.model.relation.RequestStatus;
+import fakegram.adapter.cassandra.model.relation.RelationByObject;
+import fakegram.adapter.cassandra.model.relation.RelationBySubject;
+import fakegram.domain.model.relation.RelationType;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface RelationRepository {
 
-    void upsertFollowingRelation(UUID followerId, UUID followeeId, RequestStatus requestStatus);
+    void upsertRelation(UUID followerId, UUID followeeId, RelationType relationType);
 
-    void upsertFollowerRelation(UUID followeeId, UUID followerId, RequestStatus requestStatus);
+    void deleteRelation(UUID followerId, UUID followeeId, RelationType relationType);
 
-    void deleteFollowingRelation(UUID followerId, UUID followeeId, RequestStatus requestStatus);
+    List<RelationByObject> findAllRelationByObject(UUID accountId, RelationType relationType);
 
-    void deleteFollowerRelation(UUID followeeId, UUID followerId, RequestStatus requestStatus);
-
-    List<Follower> findAllFollowers(UUID accountId, RequestStatus requestStatus);
-
-    List<Following> findAllFollowing(UUID accountId, RequestStatus requestStatus);
+    List<RelationBySubject> findAllRelationsBySubject(UUID accountId, RelationType relationType);
 }

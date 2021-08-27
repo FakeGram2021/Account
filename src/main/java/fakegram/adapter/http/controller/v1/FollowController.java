@@ -1,8 +1,8 @@
 package fakegram.adapter.http.controller.v1;
 
 import fakegram.domain.model.account.User;
-import fakegram.domain.model.relation.RequestStatus;
-import fakegram.domain.service.RelationService;
+import fakegram.domain.model.relation.RelationType;
+import fakegram.domain.service.FollowService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
@@ -14,30 +14,30 @@ import java.util.UUID;
 
 import static io.micronaut.security.rules.SecurityRule.IS_AUTHENTICATED;
 
-@Controller("/api/v1/relation")
+@Controller("/api/v1")
 @Secured(IS_AUTHENTICATED)
-public class RelationController {
+public class FollowController {
 
-    private final RelationService relationService;
+    private final FollowService followService;
 
     @Inject
-    public RelationController(RelationService relationService) {
-        this.relationService = relationService;
+    public FollowController(FollowService followService) {
+        this.followService = followService;
     }
 
     @Get("/followers/{status}")
     @Secured({"ROLE_USER"})
-    public HttpResponse<Collection<User>> getFollowers(RequestStatus status, Authentication authentication) {
+    public HttpResponse<Collection<User>> getFollowers(RelationType status, Authentication authentication) {
         UUID accountID = UUID.fromString(authentication.getName());
-        Collection<User> followers = relationService.getFollowers(accountID, status);
+        Collection<User> followers = followService.getFollowers(accountID, status);
         return HttpResponse.ok(followers);
     }
 
     @Get("/following/{status}")
     @Secured({"ROLE_USER"})
-    public HttpResponse<Collection<User>> getFollowing(RequestStatus status, Authentication authentication) {
+    public HttpResponse<Collection<User>> getFollowing(RelationType status, Authentication authentication) {
         UUID accountID = UUID.fromString(authentication.getName());
-        Collection<User> followingUsers = relationService.getFollowings(accountID, status);
+        Collection<User> followingUsers = followService.getFollowings(accountID, status);
         return HttpResponse.ok(followingUsers);
     }
 
@@ -45,27 +45,27 @@ public class RelationController {
     @Secured({"ROLE_USER"})
     public void followAccount(@PathVariable UUID followeeId, Authentication authentication) {
         UUID accountID = UUID.fromString(authentication.getName());
-        relationService.followUser(accountID, followeeId);
+        followService.followUser(accountID, followeeId);
     }
 
     @Put("/unfollow/{followingId}")
     @Secured({"ROLE_USER"})
     public void unfollowAccount(@PathVariable UUID followingId, Authentication authentication) {
         UUID accountID = UUID.fromString(authentication.getName());
-        relationService.unfollow(accountID, followingId);
+        followService.unfollow(accountID, followingId);
     }
 
     @Put("/follow/accept/{followingId}")
     @Secured({"ROLE_USER"})
     public void acceptFollow(@PathVariable UUID followingId, Authentication authentication) {
         UUID accountID = UUID.fromString(authentication.getName());
-        relationService.acceptFollowing(accountID, followingId);
+        followService.acceptFollowing(accountID, followingId);
     }
 
     @Put("/follow/decline/{followingId}")
     @Secured({"ROLE_USER"})
     public void declineFollow(@PathVariable UUID followingId, Authentication authentication) {
         UUID accountID = UUID.fromString(authentication.getName());
-        relationService.declineFollowing(accountID, followingId);
+        followService.declineFollowing(accountID, followingId);
     }
 }

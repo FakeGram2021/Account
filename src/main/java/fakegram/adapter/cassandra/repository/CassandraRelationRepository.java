@@ -1,13 +1,13 @@
 package fakegram.adapter.cassandra.repository;
 
 import com.datastax.oss.driver.api.core.CqlSession;
-import fakegram.adapter.cassandra.dao.following.FollowerDao;
-import fakegram.adapter.cassandra.dao.following.FollowingDao;
-import fakegram.adapter.cassandra.mapper.following.RelationMapper;
-import fakegram.adapter.cassandra.mapper.following.RelationMapperBuilder;
-import fakegram.adapter.cassandra.model.following.Follower;
-import fakegram.adapter.cassandra.model.following.Following;
-import fakegram.domain.model.relation.RequestStatus;
+import fakegram.adapter.cassandra.dao.relation.RelationByObjectDao;
+import fakegram.adapter.cassandra.dao.relation.RelationBySubjectDao;
+import fakegram.adapter.cassandra.mapper.relation.RelationMapper;
+import fakegram.adapter.cassandra.mapper.relation.RelationMapperBuilder;
+import fakegram.adapter.cassandra.model.relation.RelationByObject;
+import fakegram.adapter.cassandra.model.relation.RelationBySubject;
+import fakegram.domain.model.relation.RelationType;
 import fakegram.domain.repository.RelationRepository;
 
 import javax.inject.Inject;
@@ -19,60 +19,71 @@ import static com.datastax.oss.driver.api.core.CqlIdentifier.fromCql;
 
 public class CassandraRelationRepository implements RelationRepository {
 
-    private static final String FOLLOWER_TABLE_NAME = "follower";
-    private static final String FOLLOWING_TABLE_NAME = "following";
+    private static final String KEYSPACE = "account";
+    private static final String RELATION_BY_OBJECT_TABLE = "relation_by_object";
+    private static final String RELATION_BY_SUBJECT_TABLE = "relation_by_subject";
 
-    private final FollowerDao followerDao;
-    private final FollowingDao followingDao;
+    private final RelationByObjectDao relationByObjectDao;
+    private final RelationBySubjectDao relationBySubjectDao;
 
     @Inject
     public CassandraRelationRepository(final CqlSession session) {
         final RelationMapper relationMapper = new RelationMapperBuilder(session).build();
-        followerDao = relationMapper.followerDao(
-                fromCql("account"),
-                fromCql(FOLLOWER_TABLE_NAME)
+        relationByObjectDao = relationMapper.relationByObjectDao(
+                fromCql(KEYSPACE),
+                fromCql(RELATION_BY_OBJECT_TABLE)
         );
-        followingDao = relationMapper.followingDao(
-                fromCql("account"),
-                fromCql(FOLLOWING_TABLE_NAME)
+        relationBySubjectDao = relationMapper.relationBySubjectDao(
+                fromCql(KEYSPACE),
+                fromCql(RELATION_BY_SUBJECT_TABLE)
         );
     }
 
-    public void upsertFollowingRelation(UUID followerId, UUID followeeId, RequestStatus requestStatus) {
-        Following followingRelation = Following.from(followerId, followeeId, requestStatus);
-        followingDao.upsert(followingRelation);
+    public void upsertRelation(UUID subject, UUID object, RelationType relationType) {
+        this.upsertRelationBySubject(subject, object, relationType);
+        this.upsertRelationByObject(object, subject, relationType);
     }
 
-    public void upsertFollowerRelation(UUID followeeId, UUID followerId, RequestStatus requestStatus) {
-        Follower followerRelation = Follower.from(followeeId, followerId, requestStatus);
-        followerDao.upsert(followerRelation);
+    public void deleteRelation(UUID subjectId, UUID objectId, RelationType relationType) {
+        this.deleteRelationBySubject(subjectId, objectId, relationType);
+        this.deleteRelationByObject(objectId, subjectId, relationType);
     }
 
-    public void deleteFollowingRelation(UUID followerId, UUID followeeId, RequestStatus requestStatus) {
-        Following followingRelation = Following.from(followerId, followeeId, requestStatus);
-        followingDao.delete(followingRelation);
-    }
-
-    public void deleteFollowerRelation(UUID followeeId, UUID followerId, RequestStatus requestStatus) {
-        Follower followerRelation = Follower.from(followeeId, followerId, requestStatus);
-        followerDao.delete(followerRelation);
-    }
-
-    public List<Follower> findAllFollowers(UUID accountId, RequestStatus requestStatus) {
-        return followerDao
-                .findAllUserFollowers(accountId)
+    public List<RelationByObject> findAllRelationByObject(UUID accountId, RelationType relationType) {
+        return relationByObjectDao
+                .findAllSubjectInRelations(accountId)
                 .all()
                 .stream()
-                .filter(follower -> follower.getRequestStatus().equals(requestStatus.toString()))
+                .filter(follower -> follower.getRelationType().equals(relationType.toString()))
                 .collect(Collectors.toList());
     }
 
-    public List<Following> findAllFollowing(UUID accountId, RequestStatus requestStatus) {
-        return followingDao
-                .findAllUserFollowers(accountId)
+    public List<RelationBySubject> findAllRelationsBySubject(UUID accountId, RelationType relationType) {
+        return relationBySubjectDao
+                .findAllObjectsInRelations(accountId)
                 .all()
                 .stream()
-                .filter(following -> following.getRequestStatus().equals(requestStatus.toString()))
+                .filter(following -> following.getRelationType().equals(relationType.toString()))
                 .collect(Collectors.toList());
+    }
+
+    private void upsertRelationBySubject(UUID subjectId, UUID objectId, RelationType relationType) {
+        RelationBySubject relationBySubjectRelation = RelationBySubject.from(subjectId, objectId, relationType);
+        relationBySubjectDao.upsert(relationBySubjectRelation);
+    }
+
+    private void upsertRelationByObject(UUID objectId, UUID subjectId, RelationType relationType) {
+        RelationByObject relationByObjectRelation = RelationByObject.from(objectId, subjectId, relationType);
+        relationByObjectDao.upsert(relationByObjectRelation);
+    }
+
+    private void deleteRelationBySubject(UUID subjectId, UUID objectId, RelationType relationType) {
+        RelationBySubject relationBySubjectRelation = RelationBySubject.from(subjectId, objectId, relationType);
+        relationBySubjectDao.delete(relationBySubjectRelation);
+    }
+
+    private void deleteRelationByObject(UUID objectId, UUID subjectId, RelationType relationType) {
+        RelationByObject relationByObjectRelation = RelationByObject.from(objectId, subjectId, relationType);
+        relationByObjectDao.delete(relationByObjectRelation);
     }
 }
