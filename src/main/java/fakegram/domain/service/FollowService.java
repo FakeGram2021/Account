@@ -28,7 +28,6 @@ public class FollowService {
     ) {
         this.userService = userService;
         this.relationRepository = relationRepository;
-
     }
 
     public Collection<User> getFollowers(UUID accountId, RelationType relationType) {
