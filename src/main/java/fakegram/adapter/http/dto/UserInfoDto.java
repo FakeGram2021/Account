@@ -18,6 +18,7 @@ public class UserInfoDto {
 
     private UUID accountId;
     private String username;
+    private String avatar;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -32,6 +33,7 @@ public class UserInfoDto {
         return UserInfoDto.builder()
                 .accountId(user.getAccountId())
                 .username(user.getUsername())
+                .avatar(user.getAvatar())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())

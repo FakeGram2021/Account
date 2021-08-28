@@ -63,6 +63,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>io.micronaut.kafka</groupId>
+            <artifactId>micronaut-kafka</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.datastax.oss</groupId>
             <artifactId>java-driver-core</artifactId>
             <version>4.12.0</version>
@@ -125,6 +129,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>kafka</artifactId>
+            <version>1.16.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
             <version>3.4.9</version>
@@ -134,7 +144,6 @@
             <artifactId>spring-security-bom</artifactId>
             <version>5.4.6</version>
             <type>pom</type>
-            <scope>import</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>

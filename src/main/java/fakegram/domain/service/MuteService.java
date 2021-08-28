@@ -1,6 +1,7 @@
 package fakegram.domain.service;
 
 import fakegram.adapter.cassandra.model.relation.RelationBySubject;
+import fakegram.domain.message.handler.RelationMessageHandler;
 import fakegram.domain.model.account.User;
 import fakegram.domain.repository.RelationRepository;
 
@@ -15,14 +16,17 @@ import static fakegram.domain.model.relation.RelationType.MUTE;
 public class MuteService {
 
     private final UserService userService;
+    private final RelationMessageHandler relationMessageHandler;
     private final RelationRepository relationRepository;
 
     @Inject
     public MuteService(
         final UserService userService,
+        final RelationMessageHandler relationMessageHandler,
         final RelationRepository relationRepository
     ) {
         this.userService = userService;
+        this.relationMessageHandler = relationMessageHandler;
         this.relationRepository = relationRepository;
     }
 
@@ -37,9 +41,11 @@ public class MuteService {
 
     public void muteUser(UUID accountId, UUID muteUserId) {
         relationRepository.upsertRelation(accountId, muteUserId, MUTE);
+        relationMessageHandler.sendRelations(MUTE, accountId, muteUserId, true);
     }
 
     public void unmuteUser(UUID accountId, UUID muteUserId) {
         relationRepository.deleteRelation(accountId, muteUserId, MUTE);
+        relationMessageHandler.sendRelations(MUTE, accountId, muteUserId, false);
     }
 }
