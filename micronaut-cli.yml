@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: fakegram
+testFramework: junit
+sourceLanguage: java
+buildTool: maven
+features: [ annotation-api, app-name, assertj, cassandra, http-client, java, java-application, junit, logback, lombok, maven, readme, shade, testcontainers, tomcat-server, yaml ]
