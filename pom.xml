@@ -20,6 +20,8 @@
         <micronaut.version>2.5.7</micronaut.version>
         <exec.mainClass>fakegram.Application</exec.mainClass>
         <micronaut.runtime>tomcat</micronaut.runtime>
+        <sonar.organization>fakegram2021</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io/</sonar.host.url>
     </properties>
 
     <repositories>
