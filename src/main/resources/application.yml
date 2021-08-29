@@ -1,6 +1,18 @@
 micronaut:
   application:
     name: account
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
+        step: PT20.00S
+        descriptions: true
+endpoints:
+  prometheus:
+    sensitive: false
+  metrics:
+    sensitive: false
   security:
     reject-not-found: false
     authentication: bearer
