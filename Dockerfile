@@ -1,8 +1,7 @@
-FROM maven:3.8.2-adoptopenjdk-11 AS appServerBuild
-ARG STAGE=dev
+FROM djokicm/account-maven:latest AS appServerBuild
 WORKDIR /usr/src/server
 COPY . .
-RUN mvn package -DskipTests
+RUN --mount=type=cache,target=/root/.m2 mvn package -DskipTests
 
 FROM openjdk:11.0.11-jdk-slim AS appServerRuntime
 WORKDIR /app
