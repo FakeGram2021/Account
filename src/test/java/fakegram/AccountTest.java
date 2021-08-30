@@ -1,21 +1,22 @@
 package fakegram;
 
-import io.micronaut.runtime.EmbeddedApplication;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+import fakegram.integration.account.GetUserInfoTest;
+import fakegram.integration.account.RegisterUserTest;
+import fakegram.integration.account.UpdateUserTest;
+import fakegram.integration.following.FollowingRequestTest;
+import fakegram.integration.following.FollowingTest;
+import fakegram.integration.following.GetFollowersTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-import javax.inject.Inject;
-
-@MicronautTest
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        GetUserInfoTest.class,
+        RegisterUserTest.class,
+        UpdateUserTest.class,
+        FollowingTest.class,
+        FollowingRequestTest.class,
+        GetFollowersTest.class
+})
 class AccountTest {
-
-    @Inject
-    EmbeddedApplication<?> application;
-
-    @Test
-    void testItWorks() {
-        Assertions.assertTrue(application.isRunning());
-    }
-
 }

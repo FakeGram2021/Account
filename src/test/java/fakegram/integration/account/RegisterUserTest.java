@@ -5,9 +5,7 @@ import fakegram.adapter.http.dto.NewUserDto;
 import fakegram.adapter.http.dto.UserInfoDto;
 import fakegram.container.AbstractContainerBaseTest;
 import fakegram.domain.model.account.Gender;
-import io.micronaut.context.ApplicationContext;
 import io.micronaut.http.client.HttpClient;
-import io.micronaut.runtime.server.EmbeddedServer;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -18,12 +16,10 @@ import static io.micronaut.http.HttpRequest.POST;
 public class RegisterUserTest extends AbstractContainerBaseTest {
 
     private static HttpClient client;
-    private static EmbeddedServer server;
     private static CassandraUserRepository userRepository;
 
     @BeforeClass
     public static void contextRunning() {
-        EmbeddedServer server = ApplicationContext.run(EmbeddedServer.class);
         userRepository = server
                 .getApplicationContext()
                 .getBean(CassandraUserRepository.class);
@@ -34,9 +30,6 @@ public class RegisterUserTest extends AbstractContainerBaseTest {
 
     @AfterClass
     public static void stopServer() {
-        if (server != null) {
-            server.stop();
-        }
         if (client != null) {
             client.stop();
         }
