@@ -12,6 +12,8 @@ import org.reactivestreams.Publisher;
 
 import javax.inject.Inject;
 
+import static java.util.Objects.nonNull;
+
 @Filter(value="/**")
 public class HttpMetricsFilter implements HttpServerFilter {
 
@@ -45,6 +47,8 @@ public class HttpMetricsFilter implements HttpServerFilter {
 
     @Override
     public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
+        String userAgent = nonNull(request.getHeaders().get("User-Agent")) ? request.getHeaders().get("User-Agent") : "Unknown";
+
         String url = request.getPath();
         requestCounter.labels(
                 SERVICE_NAME,
@@ -52,7 +56,7 @@ public class HttpMetricsFilter implements HttpServerFilter {
                 Integer.toString(request.getServerAddress().getPort()),
                 url,
                 request.getRemoteAddress().getAddress().toString(),
-                request.getHeaders().get("User-Agent")
+                userAgent
             ).inc();
 
         long requestContentSize = request.getContentLength() < 0 ? 0 : request.getContentLength();

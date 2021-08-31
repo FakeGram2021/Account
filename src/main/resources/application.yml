@@ -8,11 +8,6 @@ micronaut:
         enabled: true
         step: PT20.00S
         descriptions: true
-endpoints:
-  prometheus:
-    sensitive: false
-  metrics:
-    sensitive: false
   security:
     reject-not-found: false
     authentication: bearer
@@ -22,6 +17,12 @@ endpoints:
           secret:
             generator:
               secret: '"${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}"'
+endpoints:
+  prometheus:
+    sensitive: false
+  metrics:
+    sensitive: false
+
 cassandra:
   default:
     basic:
