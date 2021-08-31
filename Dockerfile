@@ -1,4 +1,4 @@
-FROM djokicm/account-maven:latest AS appServerBuild
+FROM nemanjajan/account-maven:latest AS appServerBuild
 WORKDIR /usr/src/server
 COPY . .
 RUN --mount=type=cache,target=/root/.m2 mvn package -DskipTests
