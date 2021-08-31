@@ -19,6 +19,7 @@ import static java.util.Objects.nonNull;
 public class UpdateUserInfoDto {
 
     private String username;
+    private String avatar;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -34,6 +35,7 @@ public class UpdateUserInfoDto {
                 .builder()
                 .accountId(accountId)
                 .username(username)
+                .avatar(avatar)
                 .firstName(firstName)
                 .lastName(lastName)
                 .phoneNumber(phoneNumber)

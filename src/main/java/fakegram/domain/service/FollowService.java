@@ -2,6 +2,7 @@ package fakegram.domain.service;
 
 import fakegram.adapter.cassandra.model.relation.RelationByObject;
 import fakegram.adapter.cassandra.model.relation.RelationBySubject;
+import fakegram.domain.message.handler.RelationMessageHandler;
 import fakegram.domain.model.account.User;
 import fakegram.domain.model.relation.RelationType;
 import fakegram.domain.repository.RelationRepository;
@@ -19,14 +20,17 @@ import static fakegram.domain.model.relation.RelationType.*;
 public class FollowService {
 
     private final UserService userService;
+    private final RelationMessageHandler relationMessageHandler;
     private final RelationRepository relationRepository;
 
     @Inject
     public FollowService(
         final UserService userService,
+        final RelationMessageHandler relationMessageHandler,
         final RelationRepository relationRepository
     ) {
         this.userService = userService;
+        this.relationMessageHandler = relationMessageHandler;
         this.relationRepository = relationRepository;
     }
 
@@ -50,6 +54,7 @@ public class FollowService {
         User followee = userService.findUserByAccountId(followeeId);
         if(followee.getPrivacy() == PUBLIC) {
             relationRepository.upsertRelation(followerId, followeeId, FOLLOW);
+            relationMessageHandler.sendRelations(FOLLOW, followeeId, followeeId, true);
         } else {
             relationRepository.upsertRelation(followerId, followeeId, PENDING_FOLLOW);
         }
@@ -57,11 +62,13 @@ public class FollowService {
 
     public void unfollow(UUID followerId, UUID followeeId) {
         relationRepository.deleteRelation(followerId, followeeId, FOLLOW);
+        relationMessageHandler.sendRelations(FOLLOW, followeeId, followeeId, false);
     }
 
     public void acceptFollowing(UUID followeeId, UUID followerId) {
         relationRepository.deleteRelation(followeeId, followerId, PENDING_FOLLOW);
         relationRepository.upsertRelation(followerId, followeeId, FOLLOW);
+        relationMessageHandler.sendRelations(FOLLOW, followeeId, followeeId, true);
     }
 
     public void declineFollowing(UUID followeeId, UUID followerId) {

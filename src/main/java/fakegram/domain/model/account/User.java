@@ -17,6 +17,7 @@ import static java.util.Objects.isNull;
 public class User {
 
     private UUID accountId;
+    private String avatar;
     private String username;
     private String password;
     private String firstName;
@@ -35,6 +36,7 @@ public class User {
 
     public void updateUserWith(User updatedUser) {
         username = isNull(updatedUser.getUsername()) ? username : updatedUser.getUsername();
+        avatar = isNull(updatedUser.getAvatar()) ? avatar : updatedUser.getAvatar();
         firstName = isNull(updatedUser.getFirstName()) ? firstName : updatedUser.getFirstName();
         lastName = isNull(updatedUser.getLastName()) ? lastName : updatedUser.getLastName();
         phoneNumber = isNull(updatedUser.getPhoneNumber()) ? phoneNumber : updatedUser.getPhoneNumber();

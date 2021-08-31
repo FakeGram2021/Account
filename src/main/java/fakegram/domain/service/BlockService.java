@@ -1,6 +1,7 @@
 package fakegram.domain.service;
 
 import fakegram.adapter.cassandra.model.relation.RelationBySubject;
+import fakegram.domain.message.handler.RelationMessageHandler;
 import fakegram.domain.model.account.User;
 import fakegram.domain.repository.RelationRepository;
 
@@ -15,14 +16,17 @@ import static fakegram.domain.model.relation.RelationType.BLOCK;
 public class BlockService {
 
     private final UserService userService;
+    private final RelationMessageHandler relationMessageHandler;
     private final RelationRepository relationRepository;
 
     @Inject
     public BlockService(
         final UserService userService,
+        final RelationMessageHandler relationMessageHandler,
         final RelationRepository relationRepository
     ) {
         this.userService = userService;
+        this.relationMessageHandler = relationMessageHandler;
         this.relationRepository = relationRepository;
     }
 
@@ -37,9 +41,11 @@ public class BlockService {
 
     public void blockUser(UUID accountId, UUID blockUserId) {
         relationRepository.upsertRelation(accountId, blockUserId, BLOCK);
+        relationMessageHandler.sendRelations(BLOCK, accountId, blockUserId, true);
     }
 
     public void unblockUser(UUID accountId, UUID blockedUserId) {
         relationRepository.deleteRelation(accountId, blockedUserId, BLOCK);
+        relationMessageHandler.sendRelations(BLOCK, accountId, blockedUserId, false);
     }
 }

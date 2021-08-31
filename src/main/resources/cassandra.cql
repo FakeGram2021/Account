@@ -9,6 +9,7 @@ USE account;
 CREATE TABLE account_info_by_account_id (
   account_id UUID,
   username TEXT,
+  avatar TEXT,
   password TEXT,
   first_name TEXT,
   last_name TEXT,

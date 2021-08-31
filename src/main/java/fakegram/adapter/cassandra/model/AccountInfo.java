@@ -20,23 +20,12 @@ import java.util.UUID;
 public class AccountInfo {
 
     public static final String TABLE_BY_ACCOUNT_ID_NAME = "account_info_by_account_id";
-    public static final String ACCOUNT_ID = "account_id";
-    public static final String PASSWORD = "password";
-    public static final String FIRST_NAME = "first_name";
-    public static final String LAST_NAME = "last_name";
-    public static final String PHONE_NUMBER = "phone_number";
-    public static final String EMAIL = "email";
-    public static final String GENDER = "gender";
-    public static final String DATE_OF_BIRTH = "date_of_birth";
-    public static final String WEB_URL = "web_url";
-    public static final String BIOGRAPHY = "biography";
-    public static final String PRIVACY = "privacy";
-
 
     @PartitionKey
     private UUID accountId;
     private String username;
     private String password;
+    private String avatar;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -52,6 +41,7 @@ public class AccountInfo {
                 .accountId(user.getAccountId())
                 .username(user.getUsername())
                 .password(user.getPassword())
+                .avatar(user.getAvatar())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
@@ -69,6 +59,7 @@ public class AccountInfo {
                 .accountId(accountId)
                 .username(username)
                 .password(password)
+                .avatar(avatar)
                 .firstName(firstName)
                 .lastName(lastName)
                 .phoneNumber(phoneNumber)
