@@ -1,10 +1,9 @@
 package fakegram.integration.following;
 
-import fakegram.adapter.cassandra.model.following.Following;
+import fakegram.adapter.cassandra.model.relation.RelationBySubject;
 import fakegram.container.AbstractContainerBaseTest;
 import fakegram.domain.model.account.Gender;
 import fakegram.domain.model.account.User;
-import fakegram.domain.model.relation.RequestStatus;
 import fakegram.domain.repository.RelationRepository;
 import fakegram.domain.repository.UserRepository;
 import io.micronaut.http.HttpRequest;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static fakegram.domain.model.account.AccountPrivacy.PUBLIC;
+import static fakegram.domain.model.relation.RelationType.FOLLOW;
 import static io.micronaut.http.HttpRequest.POST;
 import static io.micronaut.http.HttpRequest.PUT;
 import static org.junit.Assert.assertEquals;
@@ -60,7 +60,7 @@ public class FollowingTest extends AbstractContainerBaseTest {
         ArrayList<User> users = generateUsers();
         UUID accountId = users.get(0).getAccountId();
         HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () ->
-                client.toBlocking().exchange(HttpRequest.POST(String.format("/api/v1/relation/follow/%s", accountId.toString()), "")));
+                client.toBlocking().exchange(HttpRequest.POST(String.format("/api/v1/follow/%s", accountId.toString()), "")));
 
         assertEquals(exception.getStatus(), HttpStatus.UNAUTHORIZED);
     }
@@ -80,14 +80,14 @@ public class FollowingTest extends AbstractContainerBaseTest {
         //When
         HttpResponse<Object> response = client
                 .toBlocking()
-                .exchange(POST(String.format("/api/v1/relation/follow/%s", followeeId.toString()), "").bearerAuth(accessToken));
+                .exchange(POST(String.format("/api/v1/follow/%s", followeeId.toString()), "").bearerAuth(accessToken));
 
         //Then
-        List<Following> followers = relationRepository.findAllFollowing(users.get(0).getAccountId(), RequestStatus.ACCEPTED);
+        List<RelationBySubject> followers = relationRepository.findAllRelationsBySubject(users.get(0).getAccountId(), FOLLOW);
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(response.getStatus().toString()).isEqualTo(HttpStatus.OK);
-        softly.assertThat(followers.get(0).getFollowerId()).isEqualTo(users.get(0).getAccountId());
-        softly.assertThat(followers.get(0).getFolloweeId()).isEqualTo(users.get(1).getAccountId());
+        softly.assertThat(followers.get(0).getSubjectId()).isEqualTo(users.get(0).getAccountId());
+        softly.assertThat(followers.get(0).getObjectId()).isEqualTo(users.get(1).getAccountId());
         softly.assertThat(followers).hasSize(1);
     }
 
@@ -108,10 +108,10 @@ public class FollowingTest extends AbstractContainerBaseTest {
         //When
         HttpResponse<Object> response = client
                 .toBlocking()
-                .exchange(PUT(String.format("/api/v1/relation/unfollow/%s", followeeId.toString()), "").bearerAuth(accessToken));
+                .exchange(PUT(String.format("/api/v1/unfollow/%s", followeeId.toString()), "").bearerAuth(accessToken));
 
         //Then
-        List<Following> followers = relationRepository.findAllFollowing(users.get(0).getAccountId(), RequestStatus.ACCEPTED);
+        List<RelationBySubject> followers = relationRepository.findAllRelationsBySubject(users.get(0).getAccountId(), FOLLOW);
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(response.getStatus().toString()).isEqualTo(HttpStatus.OK);
         softly.assertThat(followers).hasSize(0);
@@ -158,7 +158,6 @@ public class FollowingTest extends AbstractContainerBaseTest {
     }
 
     private void insertFollowInRepository(UUID followerId, UUID followeeId) {
-        relationRepository.upsertFollowerRelation(followeeId, followerId, RequestStatus.ACCEPTED);
-        relationRepository.upsertFollowingRelation(followerId, followeeId, RequestStatus.ACCEPTED);
+        relationRepository.upsertRelation(followeeId, followerId, FOLLOW);
     }
 }

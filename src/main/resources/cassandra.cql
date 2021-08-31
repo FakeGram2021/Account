@@ -22,18 +22,18 @@ CREATE TABLE account_info_by_account_id (
   PRIMARY KEY(account_id)
 );
 
-CREATE TABLE follower (
-  followee_id UUID,
-  request_status TEXT,
-  follower_id UUID,
-  PRIMARY KEY(followee_id, follower_id)
+CREATE TABLE relation_by_subject (
+  subject_id UUID,
+  relation_type TEXT,
+  object_id UUID,
+  PRIMARY KEY(subject_id, relation_type, object_id)
 );
 
-CREATE TABLE following (
-  follower_id UUID,
-  request_status TEXT,
-  followee_id UUID,
-  PRIMARY KEY(follower_id, followee_id)
+CREATE TABLE relation_by_object (
+  object_id UUID,
+  relation_type TEXT,
+  subject_id UUID,
+  PRIMARY KEY(object_id, relation_type, subject_id)
 );
 
 CREATE CUSTOM INDEX account_username_index ON account_info_by_account_id (username) USING 'org.apache.cassandra.index.sasi.SASIIndex';

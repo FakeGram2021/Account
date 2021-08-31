@@ -3,7 +3,6 @@ package fakegram.integration.following;
 import fakegram.container.AbstractContainerBaseTest;
 import fakegram.domain.model.account.Gender;
 import fakegram.domain.model.account.User;
-import fakegram.domain.model.relation.RequestStatus;
 import fakegram.domain.repository.RelationRepository;
 import fakegram.domain.repository.UserRepository;
 import io.micronaut.http.HttpRequest;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static fakegram.domain.model.account.AccountPrivacy.PUBLIC;
+import static fakegram.domain.model.relation.RelationType.FOLLOW;
 import static io.micronaut.http.HttpRequest.GET;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -59,7 +59,7 @@ public class GetFollowersTest extends AbstractContainerBaseTest {
         ArrayList<User> users = generateUsers();
         UUID accountId = users.get(0).getAccountId();
         HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () ->
-                client.toBlocking().exchange(HttpRequest.GET(String.format("/api/v1/relation/followers/accepted", accountId.toString()))));
+                client.toBlocking().exchange(HttpRequest.GET(String.format("/api/v1/followers/follow", accountId.toString()))));
 
         assertEquals(exception.getStatus(), HttpStatus.UNAUTHORIZED);
     }
@@ -69,7 +69,7 @@ public class GetFollowersTest extends AbstractContainerBaseTest {
         ArrayList<User> users = generateUsers();
         UUID accountId = users.get(0).getAccountId();
         HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () ->
-                client.toBlocking().exchange(HttpRequest.GET(String.format("/api/v1/relation/following/accepted", accountId.toString()))));
+                client.toBlocking().exchange(HttpRequest.GET(String.format("/api/v1/following/follow", accountId.toString()))));
 
         assertEquals(exception.getStatus(), HttpStatus.UNAUTHORIZED);
     }
@@ -93,7 +93,7 @@ public class GetFollowersTest extends AbstractContainerBaseTest {
         //When
         List<Object> followers = client
                 .toBlocking()
-                .retrieve(GET("/api/v1/relation/followers/accepted").bearerAuth(accessToken), List.class);
+                .retrieve(GET("/api/v1/followers/follow").bearerAuth(accessToken), List.class);
 
         //Then
         SoftAssertions softly = new SoftAssertions();
@@ -118,7 +118,7 @@ public class GetFollowersTest extends AbstractContainerBaseTest {
         //When
         HttpResponse<List> response = client
                 .toBlocking()
-                .exchange(GET("/api/v1/relation/following/accepted").bearerAuth(accessToken), List.class);
+                .exchange(GET("/api/v1/following/follow").bearerAuth(accessToken), List.class);
         Collection<Object> following = (Collection<Object>) response.getBody(List.class).get();
 
 
@@ -184,10 +184,7 @@ public class GetFollowersTest extends AbstractContainerBaseTest {
     }
 
     private void insertFollowInRepository(UUID user1, UUID user2, UUID user3) {
-        relationRepository.upsertFollowingRelation(user1, user2, RequestStatus.ACCEPTED);
-        relationRepository.upsertFollowerRelation(user2, user1, RequestStatus.ACCEPTED);
-
-        relationRepository.upsertFollowingRelation(user1, user3, RequestStatus.ACCEPTED);
-        relationRepository.upsertFollowerRelation(user3, user1, RequestStatus.ACCEPTED);
+        relationRepository.upsertRelation(user1, user2, FOLLOW);
+        relationRepository.upsertRelation(user1, user3, FOLLOW);
     }
 }
