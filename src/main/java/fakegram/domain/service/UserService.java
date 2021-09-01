@@ -15,6 +15,8 @@ import static fakegram.domain.model.account.AccountPrivacy.PUBLIC;
 @Singleton
 public class UserService {
 
+    public static String DEFAULT_IMAGE = "https://res.cloudinary.com/dtddfx5ww/image/upload/v1621075575/WebStore/placeholder.jpg";
+
     private final UserMessageHandler userMessageHandler;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -47,6 +49,19 @@ public class UserService {
 
     public User registerUser(User user) {
         user.setPrivacy(PUBLIC);
+        user.setAgent(false);
+        user.setAdmin(false);
+        user.setAvatar(DEFAULT_IMAGE);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.registerUser(user);
+        userMessageHandler.sendUser(user);
+        return user;
+    }
+
+    public User registerAgent(User user) {
+        user.setPrivacy(PUBLIC);
+        user.setAgent(true);
+        user.setAvatar(DEFAULT_IMAGE);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.registerUser(user);
         userMessageHandler.sendUser(user);

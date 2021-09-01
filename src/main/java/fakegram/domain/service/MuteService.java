@@ -8,6 +8,7 @@ import fakegram.domain.repository.RelationRepository;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,11 @@ public class MuteService {
                 .map(RelationBySubject::getObjectId)
                 .collect(Collectors.toList());
         return userService.findUsersByAccountIds(mutedUsersIds);
+    }
+
+    public boolean muteRelationExists(UUID accountId, UUID blockedId) {
+        Optional<RelationBySubject> relation = relationRepository.findRelation(accountId, blockedId, MUTE);
+        return relation.isPresent();
     }
 
     public void muteUser(UUID accountId, UUID muteUserId) {

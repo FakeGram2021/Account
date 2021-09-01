@@ -17,8 +17,6 @@ public class KafkaUser {
     private String username;
     private String userAvatar;
     private boolean publicAccount;
-    private String gender;
-    private long dateOfBirth;
 
     public static KafkaUser from(User user) {
         return KafkaUser
@@ -27,8 +25,6 @@ public class KafkaUser {
                 .username(user.getUsername())
                 .userAvatar(user.getAvatar())
                 .publicAccount(user.getPrivacy() == AccountPrivacy.PUBLIC)
-                .gender(user.getGender().toString())
-                .dateOfBirth(user.getDateOfBirth())
                 .build();
     }
 

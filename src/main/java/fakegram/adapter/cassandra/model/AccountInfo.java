@@ -35,6 +35,8 @@ public class AccountInfo {
     private String webUrl;
     private String biography;
     private String privacy;
+    private String isAgent;
+    private String isAdmin;
 
     public static AccountInfo from(User user) {
         return AccountInfo.builder()
@@ -51,6 +53,8 @@ public class AccountInfo {
                 .webUrl(user.getWebUrl())
                 .biography(user.getBiography())
                 .privacy(user.getPrivacy().toString())
+                .isAdmin(Boolean.toString(user.isAdmin()))
+                .isAgent(Boolean.toString(user.isAgent()))
                 .build();
     }
 
@@ -69,6 +73,8 @@ public class AccountInfo {
                 .webUrl(webUrl)
                 .biography(biography)
                 .privacy(AccountPrivacy.valueOf(privacy))
+                .isAdmin(Boolean.parseBoolean(isAdmin))
+                .isAgent(Boolean.parseBoolean(isAgent))
                 .build();
     }
 

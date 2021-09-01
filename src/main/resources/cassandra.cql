@@ -20,6 +20,8 @@ CREATE TABLE account_info_by_account_id (
   web_url TEXT,
   biography TEXT,
   privacy TEXT,
+  is_agent TEXT,
+  is_admin TEXT,
   PRIMARY KEY(account_id)
 );
 

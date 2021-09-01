@@ -10,6 +10,7 @@ import fakegram.domain.repository.RelationRepository;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,11 @@ public class FollowService {
                 .map(RelationBySubject::getObjectId)
                 .collect(Collectors.toList());
         return userService.findUsersByAccountIds(followeeIds);
+    }
+
+    public boolean followRelationExists(UUID accountId, UUID blockedId) {
+        Optional<RelationBySubject> relation = relationRepository.findRelation(accountId, blockedId, FOLLOW);
+        return relation.isPresent();
     }
 
     public void followUser(UUID followerId, UUID followeeId) {

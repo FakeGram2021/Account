@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -40,6 +41,12 @@ public class AuthenticationProviderUserPassword implements AuthenticationProvide
             }
 
             if (username.equals(user.getUsername()) && passwordEncoder.matches(password, user.getPassword())) {
+                if(user.isAdmin()) {
+                    emitter.success(new UserDetails(user.getAccountId().toString(), List.of("ROLE_ADMIN")));
+                }
+                if(user.isAgent()) {
+                    emitter.success(new UserDetails(user.getAccountId().toString(), List.of("ROLE_AGENT")));
+                }
                 emitter.success(new UserDetails(user.getAccountId().toString(), List.of("ROLE_USER")));
             } else {
                 emitter.error(new AuthenticationException());

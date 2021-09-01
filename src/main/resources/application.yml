@@ -33,4 +33,5 @@ cassandra:
 
 kafka:
   bootstrap:
-    servers: ${KAFKA_SERVER}
+    servers:
+      - ${KAFKA_SERVER}

@@ -1,6 +1,5 @@
 package fakegram.adapter.kafka.producers;
 
-import fakegram.adapter.kafka.model.KafkaMessage;
 import io.micronaut.configuration.kafka.annotation.KafkaClient;
 import io.micronaut.configuration.kafka.annotation.KafkaKey;
 import io.micronaut.configuration.kafka.annotation.Topic;
@@ -8,7 +7,10 @@ import io.micronaut.configuration.kafka.annotation.Topic;
 @KafkaClient
 public interface UserProducer {
 
-    @Topic("user")
-    void sendUser(@KafkaKey String accountId, KafkaMessage message);
+    @Topic("post_service_topic")
+    void sendUser(@KafkaKey String key, Object payload);
+
+    @Topic("agent_service_topic")
+    void sendUserProduct(@KafkaKey String key, Object payload);
 
 }

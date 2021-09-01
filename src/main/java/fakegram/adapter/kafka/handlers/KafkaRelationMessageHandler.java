@@ -30,20 +30,18 @@ public class KafkaRelationMessageHandler implements RelationMessageHandler {
         boolean apply
     ) {
         Object payload;
-        KafkaMessage message;
         switch (relationType){
             case MUTE:
                 payload = new KafkaMute(subjectAccountId.toString(), objectAccountId.toString(), apply);
-                message = new KafkaMessage(MUTE, payload);
+                relationProducer.sendRelation(MUTE.toString(), payload);
                 break;
             case BLOCK:
                 payload = new KafkaBlock(subjectAccountId.toString(), objectAccountId.toString(), apply);
-                message = new KafkaMessage(BLOCK, payload);
+                relationProducer.sendRelation(BLOCK.toString(), payload);
                 break;
             default:
                 payload = new KafkaFollow(subjectAccountId.toString(), objectAccountId.toString(), apply);
-                message = new KafkaMessage(FOLLOW, payload);
+                relationProducer.sendRelation(FOLLOW.toString(), payload);
         }
-        relationProducer.sendRelation(subjectAccountId.toString(), message);
     }
 }

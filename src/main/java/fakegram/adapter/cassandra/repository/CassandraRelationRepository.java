@@ -12,6 +12,7 @@ import fakegram.domain.repository.RelationRepository;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,18 @@ public class CassandraRelationRepository implements RelationRepository {
     public void deleteRelation(UUID subjectId, UUID objectId, RelationType relationType) {
         this.deleteRelationBySubject(subjectId, objectId, relationType);
         this.deleteRelationByObject(objectId, subjectId, relationType);
+    }
+
+    public Optional<RelationBySubject> findRelation(UUID subjectId, UUID objectId, RelationType relationType) {
+        return relationBySubjectDao
+                .findAllObjectsInRelations(subjectId)
+                .all()
+                .stream()
+                .filter(relation ->
+                        relation.getRelationType().equals(relationType.toString())
+                        && relation.getObjectId().equals(objectId)
+                )
+                .findFirst();
     }
 
     public List<RelationByObject> findAllRelationByObject(UUID accountId, RelationType relationType) {

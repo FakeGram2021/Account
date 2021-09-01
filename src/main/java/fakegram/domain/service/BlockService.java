@@ -8,6 +8,7 @@ import fakegram.domain.repository.RelationRepository;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,11 @@ public class BlockService {
             .map(RelationBySubject::getObjectId)
             .collect(Collectors.toList());
         return userService.findUsersByAccountIds(blockedUsersId);
+    }
+
+    public boolean blockedRelationExists(UUID accountId, UUID blockedId) {
+        Optional<RelationBySubject> relation = relationRepository.findRelation(accountId, blockedId, BLOCK);
+        return relation.isPresent();
     }
 
     public void blockUser(UUID accountId, UUID blockUserId) {

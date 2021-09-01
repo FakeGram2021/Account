@@ -29,6 +29,8 @@ public class User {
     private String webUrl;
     private String biography;
     private AccountPrivacy privacy;
+    private boolean isAdmin;
+    private boolean isAgent;
     private List<User> following;
     private List<User> followedBy;
     private List<User> blocked;
