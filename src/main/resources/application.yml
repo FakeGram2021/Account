@@ -16,7 +16,7 @@ micronaut:
         signatures:
           secret:
             generator:
-              secret: '"${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}"'
+              secret: ${JWT_SECRET:pleaseChangeThisSecretForANewOne}
 endpoints:
   prometheus:
     sensitive: false
@@ -33,5 +33,4 @@ cassandra:
 
 kafka:
   bootstrap:
-    servers:
-      - ${KAFKA_SERVER}
+    servers: ${KAFKA_SERVER}

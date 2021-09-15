@@ -1,21 +1,21 @@
 package fakegram.domain.service;
 
+import static fakegram.domain.model.account.AccountPrivacy.PUBLIC;
+import static fakegram.domain.model.relation.RelationType.FOLLOW;
+import static fakegram.domain.model.relation.RelationType.PENDING_FOLLOW;
+
 import fakegram.adapter.cassandra.model.relation.RelationByObject;
 import fakegram.adapter.cassandra.model.relation.RelationBySubject;
 import fakegram.domain.message.handler.RelationMessageHandler;
 import fakegram.domain.model.account.User;
 import fakegram.domain.model.relation.RelationType;
 import fakegram.domain.repository.RelationRepository;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static fakegram.domain.model.account.AccountPrivacy.PUBLIC;
-import static fakegram.domain.model.relation.RelationType.*;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Singleton
 public class FollowService {
@@ -60,7 +60,7 @@ public class FollowService {
         User followee = userService.findUserByAccountId(followeeId);
         if(followee.getPrivacy() == PUBLIC) {
             relationRepository.upsertRelation(followerId, followeeId, FOLLOW);
-            relationMessageHandler.sendRelations(FOLLOW, followeeId, followeeId, true);
+            relationMessageHandler.sendRelations(FOLLOW, followerId, followeeId, true);
         } else {
             relationRepository.upsertRelation(followerId, followeeId, PENDING_FOLLOW);
         }
@@ -74,7 +74,7 @@ public class FollowService {
     public void acceptFollowing(UUID followeeId, UUID followerId) {
         relationRepository.deleteRelation(followeeId, followerId, PENDING_FOLLOW);
         relationRepository.upsertRelation(followerId, followeeId, FOLLOW);
-        relationMessageHandler.sendRelations(FOLLOW, followeeId, followeeId, true);
+        relationMessageHandler.sendRelations(FOLLOW, followerId, followeeId, true);
     }
 
     public void declineFollowing(UUID followeeId, UUID followerId) {

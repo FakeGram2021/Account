@@ -1,5 +1,9 @@
 package fakegram.adapter.kafka.handlers;
 
+import static fakegram.adapter.kafka.model.KafkaEvent.BLOCK;
+import static fakegram.adapter.kafka.model.KafkaEvent.FOLLOW;
+import static fakegram.adapter.kafka.model.KafkaEvent.MUTE;
+
 import fakegram.adapter.kafka.model.KafkaMessage;
 import fakegram.adapter.kafka.model.relation.KafkaBlock;
 import fakegram.adapter.kafka.model.relation.KafkaFollow;
@@ -7,11 +11,8 @@ import fakegram.adapter.kafka.model.relation.KafkaMute;
 import fakegram.adapter.kafka.producers.RelationProducer;
 import fakegram.domain.message.handler.RelationMessageHandler;
 import fakegram.domain.model.relation.RelationType;
-
-import javax.inject.Singleton;
 import java.util.UUID;
-
-import static fakegram.adapter.kafka.model.KafkaEvent.*;
+import javax.inject.Singleton;
 
 @Singleton
 public class KafkaRelationMessageHandler implements RelationMessageHandler {
@@ -33,15 +34,15 @@ public class KafkaRelationMessageHandler implements RelationMessageHandler {
         switch (relationType){
             case MUTE:
                 payload = new KafkaMute(subjectAccountId.toString(), objectAccountId.toString(), apply);
-                relationProducer.sendRelation(MUTE.toString(), payload);
+                relationProducer.sendRelation(new KafkaMessage(MUTE, payload));
                 break;
             case BLOCK:
                 payload = new KafkaBlock(subjectAccountId.toString(), objectAccountId.toString(), apply);
-                relationProducer.sendRelation(BLOCK.toString(), payload);
+                relationProducer.sendRelation(new KafkaMessage(BLOCK, payload));
                 break;
             default:
                 payload = new KafkaFollow(subjectAccountId.toString(), objectAccountId.toString(), apply);
-                relationProducer.sendRelation(FOLLOW.toString(), payload);
+                relationProducer.sendRelation(new KafkaMessage(FOLLOW, payload));
         }
     }
 }

@@ -4,9 +4,9 @@ import io.micronaut.configuration.kafka.annotation.KafkaClient;
 import io.micronaut.configuration.kafka.annotation.Topic;
 
 @KafkaClient
-public interface UserProducer {
+public interface AgentProducer {
 
-    @Topic("post_service_topic")
+    @Topic("agent_service_topic")
     void sendUser(Object payload);
 
 }

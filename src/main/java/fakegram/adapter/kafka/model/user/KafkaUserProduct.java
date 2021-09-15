@@ -1,6 +1,8 @@
 package fakegram.adapter.kafka.model.user;
 
 import fakegram.domain.model.account.User;
+import java.time.ZoneId;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +23,8 @@ public class KafkaUserProduct {
                 .builder()
                 .id(user.getAccountId().toString())
                 .sex(user.getGender().toString())
-                .birthYear(user.getDateOfBirth())
+                .birthYear(new Date(user.getDateOfBirth()).toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalDate().getYear())
                 .build();
     }
 

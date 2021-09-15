@@ -16,17 +16,18 @@ public class SearchUserDto {
 
     private UUID userId;
     private String username;
-    private String firstName;
-    private String lastName;
-
+    private String webUrl;
+    private String biography;
+    private String userAvatar;
 
     public static SearchUserDto from(User user) {
         return SearchUserDto
                 .builder()
                 .userId(user.getAccountId())
                 .username(user.getUsername())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
+                .webUrl(user.getWebUrl())
+                .biography(user.getBiography())
+                .userAvatar(user.getAvatar())
                 .build();
     }
 }
